@@ -9,20 +9,17 @@ backend_url = os.getenv("backend_url", "http://localhost:3030").rstrip("/")
 sentiment_analyzer_url = os.getenv("sentiment_analyzer_url", "http://localhost:5050").rstrip("/")
 
 
-def get_request(endpoint, **kwargs):
-    """
-    Send GET to the backend service (dealers/reviews microservice backend).
-    """
+def get_request(endpoint):
     endpoint = endpoint if endpoint.startswith("/") else f"/{endpoint}"
     request_url = f"{backend_url}{endpoint}"
 
     try:
-        resp = requests.get(request_url, params=kwargs if kwargs else None, timeout=10)
-        resp.raise_for_status()
+        resp = requests.get(request_url, timeout=10)
         return resp.json()
     except Exception as e:
         print("Network exception occurred in get_request:", e)
         return []
+
 
 
 def analyze_review_sentiments(text):

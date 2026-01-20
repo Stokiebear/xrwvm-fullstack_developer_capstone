@@ -11,24 +11,31 @@ app.use(require('body-parser').urlencoded({ extended: false }));
 const reviews_data = JSON.parse(fs.readFileSync("reviews.json", 'utf8'));
 const dealerships_data = JSON.parse(fs.readFileSync("dealerships.json", 'utf8'));
 
-mongoose.connect("mongodb://mongo_db:27017/",{'dbName':'dealershipsDB'});
+mongoose.connect("mongodb://db_container:27017/dealershipsDB",
+    {'dbName':'dealershipsDB'});
 
 
 const Reviews = require('./review');
 
 const Dealerships = require('./dealership');
 
-try {
-  // Reviews.deleteMany({}).then(()=>{
-  // Reviews.insertMany(reviews_data['reviews']);
-  // });
-  Dealerships.deleteMany({}).then(()=>{
-    Dealerships.insertMany(dealerships_data['dealerships']);
+mongoose.connection.once("open", async () => {
+    console.log("MongoDB connected");
+  
+    try {
+      // OPTIONAL: reviews
+      // await Reviews.deleteMany({});
+      // await Reviews.insertMany(reviews_data["reviews"]);
+  
+      await Dealerships.deleteMany({});
+      await Dealerships.insertMany(dealerships_data["dealerships"]);
+  
+      console.log("Dealerships seeded successfully");
+    } catch (err) {
+      console.error("Seeding error:", err);
+    }
   });
   
-} catch (error) {
-  res.status(500).json({ error: 'Error fetching documents' });
-}
 
 
 // Express route to home
@@ -66,6 +73,17 @@ app.get('/fetchDealers', async (req, res) => {
         res.status(500).json({ error : 'Error fetching documents'});
     }
 });
+
+// GET all dealerships
+app.get('/dealerships', async (req, res) => {
+    try {
+      const documents = await Dealerships.find({});
+      res.json(documents);
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching dealerships' });
+    }
+  });
+  
 
 // Express route to fetch Dealers by a particular state
 app.get('/fetchDealers/:state', async (req, res) => {

@@ -1,7 +1,7 @@
 # Uncomment the required imports before adding the code
 
 # from django.shortcuts import render
-# from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 # from django.contrib import messages
 # from datetime import datetime
@@ -13,7 +13,6 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 import logging
 import json
-
 from .populate import initiate
 
 
@@ -96,7 +95,7 @@ def get_dealerships(request, state="All"):
     if(state == "All"):
         endpoint = "/fetchDealers"
     else:
-        endpoint = "/fetchDealers/"+state
+        endpoint = "/fetchDealers/" +state
     dealerships = get_request(endpoint)
     return JsonResponse({"status":200,"dealers":dealerships})
 
