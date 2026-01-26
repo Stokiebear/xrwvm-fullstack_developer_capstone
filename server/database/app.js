@@ -83,7 +83,10 @@ app.get('/dealerships', async (req, res) => {
       res.status(500).json({ error: 'Error fetching dealerships' });
     }
   });
-  
+
+app.get('/dealers', async (req, res) => {
+    res.redirect(307, '/dealerships');
+});  
 
 // Express route to fetch Dealers by a particular state
 app.get('/fetchDealers/:state', async (req, res) => {
